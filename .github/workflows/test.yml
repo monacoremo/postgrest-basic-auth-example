@@ -11,4 +11,6 @@ jobs:
       with:
         skip_adding_nixpkgs_channel: true
     - name: Install application
-      run: nix-env -f default.nix
+      run: nix-env -f default.nix -i
+    - name: Run tests
+      run: test
