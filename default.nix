@@ -16,6 +16,8 @@ let
     import nixpkgs { };
 in
 {
+  inherit pkgs;
+
   run =
     pkgs.writeShellScriptBin "run"
       ''
