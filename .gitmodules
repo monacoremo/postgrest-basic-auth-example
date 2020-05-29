@@ -1,0 +1,3 @@
+[submodule "shakedown"]
+	path = shakedown
+	url = git@github.com:robwhitby/shakedown.git
