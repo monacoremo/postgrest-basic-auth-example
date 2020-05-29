@@ -4,7 +4,7 @@ set -euo pipefail
 
 rootdir="$(realpath "$(dirname "$0")")"
 tutorialdir="$(realpath "${TUTORIAL_DIR:-$rootdir}")"
-rundir="$rootdir"/run
+rundir="$(mktemp -d)"/run
 
 export INGRESS_PORT=8080
 export API_PORT=3000
@@ -43,7 +43,7 @@ stopDb() {
   pg_ctl stop >> "$dbsetuplog"
 }
 
-trap "stopDb; kill 0" exit
+trap 'stopDb; rm -rf $rundir; kill 0' exit
 
 # POSTGREST API
 
