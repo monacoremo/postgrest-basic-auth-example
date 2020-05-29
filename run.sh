@@ -2,11 +2,13 @@
 
 set -euo pipefail
 
+export INGRESS_PORT=8080
+export API_PORT=3000
+export API_URI="http://localhost:$API_PORT"
+
 rootdir="$(realpath "$(dirname "$0")")"
 tutorialdir="$(realpath "${TUTORIAL_DIR:-$rootdir}")"
-export TUTORIAL_DIR="$tutorialdir"
 rundir="$rootdir"/run
-export RUN_DIR="$rundir"
 
 # Clear run dir from previous runs.
 rm -rf "$rundir"
@@ -53,13 +55,12 @@ trap "stopDb; kill 0" exit
 
 # POSTGREST API
 
-postgrest "$tutorialdir"/postgrest.conf &
+postgrest "$tutorialdir"/postgrest.conf >> "$rundir/api.log" &
 
 # NGINX INGRESS
 
-mkdir -p "$rundir"/nginx/{logs,conf}
-touch "$rundir"/nginx/logs/{error.log,access.log}
-ln -s "$tutorialdir"/nginx.conf "$rundir"/nginx/conf/nginx.conf
+mkdir -p "$rundir"/nginx/conf
+envsubst < "$tutorialdir"/nginx.conf > "$rundir"/nginx/conf/nginx.conf
 nginx -p "$rundir"/nginx 2> "$rundir"/nginx/err.log &
 
 # MAIN
@@ -70,10 +71,10 @@ while [ "$(curl -o /dev/null -s -w "%{response_code}" "http://localhost:8080/")"
 done
 
 if [ "$#" -lt 1 ]; then
-  echo "Application is running. Press Ctrl-C to exit."
+  echo "Application is ready. Press Ctrl-C to exit."
   wait
 else
-  echo "Running command \"$*\"..."
+  echo "Application is ready. Running command \"$*\"..."
   # We don't `exec` the command in order to keep our exit trap.
   "$@"
 fi

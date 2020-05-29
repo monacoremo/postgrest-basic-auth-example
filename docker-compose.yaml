@@ -1,1 +1,29 @@
-
+version: '3'
+services:
+  ingress:
+    image: nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx.conf:/nginx.conf:ro
+    environment:
+      API_URI: http://api:3000/
+      INGRESS_PORT: 8080
+    command: bash -c "envsubst < /nginx.conf > /etc/nginx/nginx.conf && nginx"
+  api:
+    image: postgrest/postgrest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./postgrest.conf:/etc/postgrest.conf:ro
+    environment:
+      DB_URI: postgres://authenticator:password@db:5432/app
+      API_PORT: 3000
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: authenticator
+      POSTGRES_PASSWORD: password

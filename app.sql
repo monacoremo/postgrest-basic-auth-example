@@ -8,12 +8,12 @@ comment on role authenticator is
 
 create role anonymous noinherit nologin;
 
-comment on role authenticator is
+comment on role anonymous is
   'The role that PostgREST will switch to for unauthenticated users.';
 
 create role api noinherit nologin;
 
-comment on role authenticator is
+comment on role api is
   'Role with limted privileges that owns the API schema and its objects.';
 
 
