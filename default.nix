@@ -14,6 +14,19 @@ let
 
   pkgs =
     import nixpkgs { };
+
+  runEnv =
+    pkgs.buildEnv {
+      name = "run-env";
+      paths =
+        [
+          pkgs.postgresql
+          pkgs.curl
+          pkgs.envsubst
+          pkgs.haskellPackages.postgrest
+          pkgs.nginx
+        ];
+    };
 in
 {
   inherit pkgs;
@@ -21,10 +34,13 @@ in
   run =
     pkgs.writeShellScriptBin "run"
       ''
+        export PATH=${runEnv}/bin:"$PATH"
+        exec ${./run.sh} "$@"
       '';
 
   test =
-    pkgs.writeShellScriptBin "test"
+    pkgs.writeShellScriptBin "tests"
       ''
+        exec ${./tests.sh}
       '';
 }

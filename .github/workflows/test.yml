@@ -13,4 +13,4 @@ jobs:
     - name: Install application
       run: nix-env -f default.nix -i
     - name: Run tests
-      run: test
+      run: TUTORIAL_DIR=. run tests

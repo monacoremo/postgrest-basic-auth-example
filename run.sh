@@ -14,13 +14,13 @@ export PGHOST="$rundir"/dbsocket
 export PGUSER=postgres
 export PGDATABASE=postgres
 export DB_URI="postgresql://$PGDATABASE?host=$PGHOST&user=$PGUSER"
+export SHAKEDOWN_URL="http://localhost:$INGRESS_PORT"
 
 # Clear run dir from previous runs.
 rm -rf "$rundir"
 
 # DATABASE
 
-# Setting up and running the database.
 dblog="$rundir/db.log"
 dbsetuplog="$rundir/dbsetup.log"
 
