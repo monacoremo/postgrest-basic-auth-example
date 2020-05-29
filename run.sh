@@ -42,7 +42,7 @@ stopDb() {
   pg_ctl stop >> "$dbsetuplog"
 }
 
-trap 'stopDb; rm -rf $rundir' exit
+trap 'stopDb; pkill -P $$; rm -rf $rundir' exit
 
 # POSTGREST API
 
