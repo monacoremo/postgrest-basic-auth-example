@@ -2,8 +2,7 @@
 
 set -euo pipefail
 
-rootdir="$(realpath "$(dirname "$0")")"
-tutorialdir="$(realpath "${TUTORIAL_DIR:-$rootdir}")"
+tutorialdir="$(realpath "${TUTORIAL_DIR:-$(pwd)}")"
 rundir="$(mktemp -d)"/run
 
 export INGRESS_PORT=8080
