@@ -2,19 +2,18 @@
 
 set -euo pipefail
 
-tutorialdir="$(realpath "${TUTORIAL_DIR:-.}")"
-export TUTORIAL_DIR="$tutorialdir"
-
 rootdir="$(realpath "$(dirname "$0")")"
+tutorialdir="$(realpath "${TUTORIAL_DIR:-$rootdir}")"
+export TUTORIAL_DIR="$tutorialdir"
 rundir="$rootdir"/run
 export RUN_DIR="$rundir"
 
+# Clear run dir from previous runs.
 rm -rf "$rundir"
-
 
 # DATABASE
 
-# Setting up and running the database
+# Setting up and running the database.
 dblog="$rundir/db.log"
 dbsetuplog="$rundir/dbsetup.log"
 
@@ -59,9 +58,16 @@ postgrest "$tutorialdir"/postgrest.conf &
 # NGINX INGRESS
 
 mkdir -p "$rundir"/nginx/{logs,conf}
+touch "$rundir"/nginx/logs/{error.log,access.log}
 ln -s "$tutorialdir"/nginx.conf "$rundir"/nginx/conf/nginx.conf
-nginx -p "$rundir"/nginx -c nginx.conf &
+nginx -p "$rundir"/nginx 2> "$rundir"/nginx/err.log &
 
+# MAIN
+
+echo "Waiting for application to be ready..."
+while [ "$(curl -o /dev/null -s -w "%{response_code}" "http://localhost:8080/")" != "200" ]; do
+  sleep 0.1;
+done
 
 if [ "$#" -lt 1 ]; then
   echo "Application is running. Press Ctrl-C to exit."
